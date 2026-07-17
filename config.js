@@ -4,5 +4,5 @@
 // SUPABASE_URL ressemble à : https://abcdefghijk.supabase.co
 // SUPABASE_ANON_KEY est une longue chaîne de caractères (clé "anon public")
 
-window.SUPABASE_URL = "COLLEZ_VOTRE_URL_SUPABASE_ICI";
-window.SUPABASE_ANON_KEY = "COLLEZ_VOTRE_CLE_ANON_ICI";
+window.SUPABASE_URL = "https://uusyjnyoauribuscmmms.supabase.co";
+window.SUPABASE_ANON_KEY = "sb_publishable_3dvPiF6peJEJ-YnfMjQc5g_4UQOvCTu";
