@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notre arbre généalogique</title>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React (bibliothèque d'interface) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Supabase (base de données pour la sauvegarde) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <!-- Vos identifiants Supabase (à remplir, voir INSTRUCTIONS.md) -->
+  <script src="config.js"></script>
+
+  <!-- Pont entre l'application et Supabase : imite exactement l'ancienne mémoire de Claude -->
+  <script>
+    const supabaseClient = window.SUPABASE_URL && window.SUPABASE_ANON_KEY
+      ? supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
+      : null;
+
+    window.storage = {
+      async get(cle) {
+        if (!supabaseClient) throw new Error("Supabase non configuré");
+        const { data, error } = await supabaseClient
+          .from("kv_store")
+          .select("value")
+          .eq("id", cle)
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) throw new Error("clé introuvable");
+        return { key: cle, value: data.value, shared: true };
+      },
+      async set(cle, valeur) {
+        if (!supabaseClient) return null;
+        const { error } = await supabaseClient
+          .from("kv_store")
+          .upsert({ id: cle, value: valeur, updated_at: new Date().toISOString() });
+        if (error) {
+          console.error("Erreur de sauvegarde Supabase :", error);
+          return null;
+        }
+        return { key: cle, value: valeur, shared: true };
+      },
+    };
+  </script>
+
+  <!-- L'application elle-même -->
+  <script src="app.js"></script>
+</body>
+</html>
