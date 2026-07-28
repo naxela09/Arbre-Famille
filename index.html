@@ -47,6 +47,20 @@
         }
         return { key: cle, value: valeur, shared: true };
       },
+      // Récupère en UNE seule requête toutes les valeurs déjà enregistrées dont
+      // la clé commence par "prefixe" (utilisé notamment par la carte du monde,
+      // pour éviter des centaines de petites requêtes une par une).
+      async list(prefixe) {
+        if (!supabaseClient) return { keys: [], items: {}, shared: true };
+        const { data, error } = await supabaseClient
+          .from("kv_store")
+          .select("id, value")
+          .like("id", `${prefixe}%`);
+        if (error) throw error;
+        const items = {};
+        (data || []).forEach((ligne) => { items[ligne.id] = ligne.value; });
+        return { keys: (data || []).map((l) => l.id), items, shared: true };
+      },
     };
   </script>
 
